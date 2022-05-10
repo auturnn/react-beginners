@@ -21,110 +21,37 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <script type="text/babel">
-    const root = document.getElementById("root");
-
-    function DistanceConverter() {
-      const [distance, setDistance] = React.useState(0);
-      const [changer, setChanger] = React.useState(false);
-      const onChange = (event) => {
-        setDistance(event.target.value);
-      };
-      const reset = () => {
-        setDistance(0);
-      };
-      const onFlip = () => {
-        reset();
-        setChanger((current) => !current);
-      };
+    function Btn({ text, onClick }) {
       return (
-        <div>
-          <h3>Distance Convert</h3>
-          <label for="miles">Miles</label>
-          <input
-            id="miles"
-            type="number"
-            placeholder="Miles"
-            value={changer ? distance * 0.6213712 : distance}
-            onChange={onChange}
-            disabled={changer === true}
-          />
-          <label for="km">Km</label>
-          <input
-            id="km"
-            type="number"
-            placeholder="Km"
-            value={changer ? distance : distance * 1.609344}
-            onChange={onChange}
-            disabled={changer === false}
-          />
-          <button onClick={onFlip}>change</button>
-        </div>
+        <button
+          onClick={onClick}
+          style={{
+            backgroundColor: "tomato",
+            color: "white",
+            padding: "10px,20px",
+            border: 0,
+            borderRadius: 10,
+          }}
+        >
+          {text}
+        </button>
       );
     }
 
-    function TimeConverter() {
-      //state return to array. [0]=value, [1]=function(modifier)
-      const [amount, setAmount] = React.useState(0);
-      const [inverted, setInverted] = React.useState(false);
-
-      const onChange = (event) => {
-        setAmount(event.target.value);
-      };
-      const reset = () => setAmount(0);
-      //현재의 상태(true or false)
-      const onFlip = () => {
-        reset();
-        setInverted((current) => !current);
-      };
-
-      return (
-        <div>
-          <label for="minutes">Minutes</label>
-          <input
-            id="minutes"
-            // inverted 가 false라면 amount , true라면 amount*60
-            value={inverted ? amount * 60 : amount}
-            placeholder="Minutes"
-            type="number"
-            //onChange => 변화가 있을때마다 value 변경. 모든것을 다시 랜더링하는 것이 아님
-            onChange={onChange}
-            disabled={inverted === true}
-          />
-          <label for="hour">Hour</label>
-          <input
-            id="hour"
-            value={inverted ? amount : Math.round(amount / 60)}
-            placeholder="Hour"
-            type="number"
-            onChange={onChange}
-            disabled={inverted === false}
-          />
-          <button onClick={reset}>Reset</button>
-          <button onClick={onFlip}>Flip</button>
-        </div>
-      );
-    }
+    //React.memo는 state,props의 변경이 있을 경우에만 ReRander 할수있도록 도와준다.
+    const MemorizedBtn = React.memo(Btn);
 
     function App() {
-      const [index, setIndex] = React.useState("xx");
-      const onSelect = (event) => {
-        setIndex((current) => (current = event.target.value));
-      };
+      const [value, setValue] = React.useState("Save Changes");
+      const changeValue = () => setValue("Revert Changes");
       return (
         <div>
-          <h1>Super Converter</h1>
-          <select value={index} onChange={onSelect}>
-            <option value="xx">Select your units</option>
-            <option value="0">Minutes & Hour</option>
-            <option value="1">Km & Miles</option>
-          </select>
-          <hr />
-          {index === "xx" ? "Please select your unit" : null}
-          {index === "0" ? <TimeConverter /> : null}
-          {index === "1" ? <DistanceConverter /> : null}
+          <MemorizedBtn text={value} onClick={changeValue} />
+          <MemorizedBtn text="Continue" />
         </div>
       );
     }
+    const root = document.getElementById("root");
     ReactDOM.render(<App />, root);
   </script>
 </html>
